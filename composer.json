@@ -12,7 +12,7 @@
 	    "homepage":"http://www.aimysc.com",
         }
     ],
-    "Minimum-stability":"dev",
+    “minimum-stability":"dev",
     "require": {
         "yiisoft/yii2": "*"
     },
