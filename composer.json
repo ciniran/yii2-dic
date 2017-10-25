@@ -8,11 +8,11 @@
     "authors": [
         {
             "name": "xiebo",
-            "email": "4816589@qq.com”,
+            "email": "4816589@qq.com",
 	    "homepage":"http://www.aimysc.com",
         }
     ],
-    “Minimum-stability”:”dev”,
+    "Minimum-stability":"dev",
     "require": {
         "yiisoft/yii2": "*"
     },
