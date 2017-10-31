@@ -133,9 +133,11 @@
       $value = DicTools::getKeyByText('base_status','是');
 
 ````
-<br>
+
+
 #### 如果本扩展有帮助到你，或者您觉得好用，请不要忘记为我点个star,非常感谢！
-<br>
+
+
 ![](https://github.com/ciniran/yii2-dic/raw/master/images/1.png)
 ![](https://github.com/ciniran/yii2-dic/raw/master/images/2.png)
 ![](https://github.com/ciniran/yii2-dic/raw/master/images/3.png)
