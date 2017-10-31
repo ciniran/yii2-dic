@@ -3,13 +3,11 @@
     "description": "yii2,extension,dic,dictionary,wordbook,系统字典",
     "type": "yii2-extension",
     "keywords": ["yii2","extension","dic","dictionary","wordbook"],
-    "homepage":"https://github.com/ciniran/yii2-dic",
     "license": "MIT",
     "authors": [
         {
             "name": "xiebo",
-            "email": "4816589@qq.com",
-	    "homepage":"http://www.aimysc.com"
+            "email": "4816589@qq.com"
         }
     ],
     "require": {
