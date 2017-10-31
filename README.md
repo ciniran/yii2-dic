@@ -60,28 +60,8 @@
     
 #### 1. 在你的后台访问 http://yourdomain/dic,可以进行数据库的字典配置
 
-#### 2. 数据字典获取代码示例：
-````
-     默认从缓存文件中获取未被禁用的项，
-          
-     $res = DicTools::getKeyByName('type')
- 
- 
- 
-     不从缓存文件中获取，
-          
-     $dic = new \dic\components\DicTools(['cache'=>false]);
-     $res = $dic->getKeyByName('type')
- 
- 
- 
-     获取结果中包含已禁用的项，
-     
-     $dic = new \dic\components\DicTools();
-     $res = $dic->getKeyByName('type',true)
-     
-````
-#### 3. 视图文件中使用示例：
+
+#### 2. 视图文件中使用示例：
 ````
 
 <?php echo GridView::widget([
