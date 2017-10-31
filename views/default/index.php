@@ -21,7 +21,7 @@ $this->registerJs("
            //  刷新请求,第一参数，将要刷新的dom节点,data:{}json对象传参数
            $('.modal').modal({
            'show':true,
-           'remote':'sub?id='+key,
+           'remote':'/dic/default/sub?id='+key,
            });
         //    $.pjax.reload({container:\"#countries\",data:{'key':key}});
         });"
