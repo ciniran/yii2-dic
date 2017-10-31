@@ -99,7 +99,7 @@
 ````
       $array = DicTools::getKeyByName('base_status'); //通过缓存取得
       
-      $array = DicTools::getKeyByName('base_status'，true);//不通过缓存取得
+      $array = DicTools::getKeyByName('base_status'，true);//获得已被禁用的项目
 
 ````
 
