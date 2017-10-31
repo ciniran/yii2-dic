@@ -135,7 +135,7 @@
 ````
 #### 如果本扩展有帮助到你，或者您觉得好用，请不要忘记为我点个star,非常感谢！
 
-![](images/1.png)
+![](http://github.com/ciniran/yii2-dic/images/1.png)
 ![](images/2.png)
 ![](images/3.png)
 ![](images/4.png)
