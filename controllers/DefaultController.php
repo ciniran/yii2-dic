@@ -35,7 +35,7 @@ class DefaultController extends Controller
     {
         $data = Yii::$app->request->queryParams;
         $searchModel = new SystemDicQuery();
-        if(!$searchModel->check()){
+        if (!$searchModel->check()) {
 
             $searchModel->initTable();
 
@@ -63,7 +63,7 @@ class DefaultController extends Controller
                     $this->redirect(['index', 'pid' => $model->pid]);
                 };
             } else {
-                Yii::$app->session->setFlash('error', Yii::t('dic','The value you have set already exists. Please check it!'));
+                Yii::$app->session->setFlash('error', Yii::t('dic', 'The value you have set already exists. Please check it!'));
             }
         }
         return $this->render('addSub', [
@@ -119,11 +119,10 @@ class DefaultController extends Controller
     {
         $model = $this->findModel($id);
         $pid = $model->pid;
-        try{
+        try {
             $model->delete();
-        }
-        catch(\Exception $exception){
-            Yii::$app->session->setFlash('error',Yii::t('dic','There are also child entries that cannot be deleted'));
+        } catch (\Exception $exception) {
+            Yii::$app->session->setFlash('error', Yii::t('dic', 'There are also child entries that cannot be deleted'));
             return $this->redirect('index');
         }
 
@@ -149,16 +148,20 @@ class DefaultController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
     public function actionSub($id)
     {
         $searchModel = new SystemDicQuery();
         $pModel = $searchModel->find()->where(['id' => $id])->select('name')->one();
-        $data['SystemDicQuery']['pid']=$id;
+        $data['SystemDicQuery']['pid'] = $id;
         $dataProvider = $searchModel->search($data);
         return $this->renderAjax('_sub', [
-            'name'=>$pModel->name ? $pModel->name : "",
+            'name' => $pModel->name ? $pModel->name : "",
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+
     }
+
+
 }

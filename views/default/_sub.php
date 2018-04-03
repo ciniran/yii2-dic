@@ -19,6 +19,7 @@ use yii\widgets\Pjax;
                         'columns' => [
                             'name',
                             'value',
+                            'sort',
                             ['class' => 'yii\grid\ActionColumn','template' => '{update}{delete}'],
                         ],
                     ]); ?>

@@ -41,7 +41,7 @@ class SystemDicQuery extends SystemDic
      */
     public function search($params)
     {
-        $query = SystemDic::find();
+        $query = SystemDic::find()->orderBy('sort DESC');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

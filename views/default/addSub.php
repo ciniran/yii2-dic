@@ -17,27 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="box-header"><?= Yii::t('dic','Create').' {'.$pModel->name .'} '.Yii::t('dic','Entry')?></div>
         <div class="box-body">
             <div class="system-dic-create">
-
-                <div class="system-dic-form ">
-
-                    <?php $form = ActiveForm::begin(); ?>
-
-                    <?php echo $form->errorSummary($model); ?>
-
-                    <?php echo $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
-                    <?php echo $form->field($model, 'value')->textInput(['maxlength' => true]) ?>
-                    <?php echo $form->field($model, 'status')->dropDownList(DicTools::getKeyByName('do_status')) ?>
-
-
-                    <div class="form-group">
-                        <?php echo Html::submitButton($model->isNewRecord ? Yii::t('dic', 'Create') : Yii::t('dic', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-                        <a class="btn btn-default" href="/dic/default/index"><?=Yii::t('dic','Back')?></a>
-                    </div>
-
-                    <?php ActiveForm::end(); ?>
-
-                </div>
+                <?php echo $this->render('_form', ['model' => $model])?>
             </div>
         </div>
     </div>

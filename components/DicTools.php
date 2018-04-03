@@ -10,68 +10,60 @@
 namespace ciniran\dic\components;
 
 use ciniran\dic\models\SystemDic;
+use Exception;
 use Yii;
-use yii\base\Component;
+use yii\base\Object;
 
 
-class DicTools extends Component
+class DicTools extends Object
 {
+    /**
+     * @var array $dicKeys ;
+     */
     private static $dicKeys;
 
+
     /**
      * @return mixed
      */
-    private static function getDicKeys()
+    protected function getDicKeys()
     {
         return self::$dicKeys;
     }
 
+    public function init()
+    {
+        $keys = Yii::$app->cache->get('DicToolsAllKey');
+        if ($keys) {
+            self::$dicKeys = $keys;
+        } else {
+            self::getKeyFromDb();
+        }
+        if (!isset(Yii::$app->i18n->translations['dic'])) {
+            Yii::$app->i18n->translations['dic'] = [
+                'class' => 'yii\i18n\PhpMessageSource',
+                'sourceLanguage' => 'en',
+                'basePath' => '@ciniran/dic/messages'
+            ];
+        }
+    }
 
     /**
-     * 取得所有的系统字典数组,为ture时不走缓存
-     * @param bool $status
-     * @return mixed
+     * 取得所有的系统字典数组
+     * @param bool $status false
+     * @return array
      */
-    public static function getAllKeys($status = false)
+    public function getAllKeys($status = true)
     {
-        self::initKey($status);
-        return self::$dicKeys;
+        if ($status) {
+            return self::$dicKeys;
+        }
+        return self::getKeyFromDb();
     }
 
 
-    /**
-     * 根据指定的数据字典key返回数据字典数组,默认为去掉已禁用的项目
-     * @param $key
-     * @param bool $status false 不显示已禁用项目，true显示已禁用项目
-     * @return mixed
-     */
-    public static function getKeyByName($key, $status = false)
-    {
-        self::initKey();
-        $keys = self::$dicKeys;
-        //去掉已禁用项目
-        if (!$status) {
-            foreach ($keys as $k => $v) {
-                if ($v['status'] != 1) {
-                    unset($keys[$k]);
-                } else {
-                    if (isset($v['subKeys'])) {
-                        foreach ($v['subKeys'] as $k2 => $v2) {
-                            if ($v2['status'] != 1) {
-                                unset($keys[$k]['subKeys'][$k2]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($keys as $v) {
-            //找出每一个子key
-            if ($v['value'] == $key && isset($v['subKeys']) && $v['subKeys']) {
-                return array_column($v['subKeys'], 'name', 'value');
-            }
-        }
-    }
+
+
 
     /**
      * 清除字典缓存
@@ -81,53 +73,7 @@ class DicTools extends Component
         Yii::$app->cache->delete('DicToolsAllKey');
     }
 
-    /**
-     * 根据字典显示值返回真实的key值
-     * @param $keyName
-     * @param $text
-     * @return int|string
-     */
-    public static function getKeyByText($keyName, $text)
-    {
-        self::initKey();
-        $keys = self::getKeyByName($keyName);
-        foreach ($keys as $k => $v) {
-            if ($v == $text) {
-                return $k;
-            }
-        }
-    }
 
-    /**
-     * 根据字典的键值返回字典的显示文本
-     * @param $keyName
-     * @param $Key
-     * @return string
-     */
-    public static function getTextByKey($keyName, $Key)
-    {
-        self::initKey();
-        $keys = self::getKeyByName($keyName);
-        if (isset($keys[$Key])) {
-            return $keys[$Key];
-        } else {
-            return '';
-        }
-    }
-
-
-    protected static function initKey($status = false)
-    {
-        if (!$status) {
-            $keys = Yii::$app->cache->get('DicToolsAllKey');
-            if (!$keys) {
-                $keys = self::getKeyFromDb();
-            }
-        } else {
-            $keys = self::getKeyFromDb();
-        }
-        self::$dicKeys = $keys;
-    }
 
     private static function getKeyFromDb()
     {
@@ -135,19 +81,88 @@ class DicTools extends Component
         $res = [];
         foreach ($keyArrays as $key => $value) {
             if ($value['pid']) {
-                foreach ($res as $k => $v) {
-                    if ($k == $value['pid']) {
-                        $res[$k]['subKeys'][$value['id']] = $value;
-                        continue;
-                    }
+                if(isset($res[$value['pid']]))
+                {
+                    $res[$value['pid']]['subKeys'][] = $value;
+                }else{
+                    throw new Exception(Yii::t('dic','To ensure that the parent entries are added to the database first, modify the data entry order!'));
                 }
             } else {
                 $res[$value['id']] = $value;
             }
         }
-        Yii::$app->cache->set('DicToolsAllKey', $res);
-        return $res;
+        $result = [];
+        foreach ($res as $item) {
+            $sort = array_column($item['subKeys'], 'sort');
+            array_multisort($sort, SORT_DESC, $item['subKeys']);
+            $temp = [];
+            foreach ($item['subKeys'] as $v) {
+                $temp[$v['id']] = $v;
+            }
+            $result[$item['value']] = $temp;
+        }
+        Yii::$app->cache->set('DicToolsAllKey', $result);
+        self::$dicKeys = $result;
+        return $result;
 
     }
 
+    /**
+     * 根据指定的数据字典key返回数据字典数组,默认为去掉已禁用的项目
+     * @param $key
+     * @param bool $status false 不显示已禁用项目，true显示已禁用项目
+     * @return array|null
+     * @throws Exception
+     */
+    public function getKey($key, $status = false)
+    {
+        $keys = self::$dicKeys;
+        if(!isset($keys[$key])){
+            throw new Exception(Yii::t('dic', "Not find the key: '{key}' , in system dic", ['key' => $key]));
+        }
+        $result = $keys[$key];
+        if (!$result) {
+            return null;
+        }
+        if(!$status){
+            //去掉禁用的
+            $result =  array_filter($result,function($item){
+                if ($item['status'] == 1) {
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+
+        }
+        return array_column($result, 'name', 'value');
+    }
+
+    /**
+     * 通过字典key的值取得编码,默认显示已禁用的
+     * @param $key
+     * @param $text
+     * @param bool $status
+     * @return mixed
+     * @throws Exception
+     */
+    public function getCode($key, $text, $status = true)
+    {
+        $array = $this->getKey($key, $status);
+        foreach ($array as $k => $v) {
+            if ($v == $text) {
+                return $k;
+            }
+        }
+        throw new Exception(Yii::t('dic', "Not find text: '{text}' , in '{key}' key", ['text' => $text, 'key' => $key]));
+    }
+
+    public function getText($key, $code, $status = true)
+    {
+        $array = $this->getKey($key, $status);
+        if (isset($array[$code])) {
+            return $array[$code];
+        }
+        throw new Exception(Yii::t('dic', "Not find the code:'{code}' , in '{key}' key", ['code' => $code, 'key' => $key]));
+    }
 }

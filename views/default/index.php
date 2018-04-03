@@ -47,9 +47,10 @@ $this->registerJs("
                 'attribute' => 'status',
                 'filter'=>$searchModel->getStatusType(),
                 'value' => function ($model) {
-                    return \ciniran\dic\components\DicTools::getTextByKey('do_status', $model->status);
+                    return Yii::$app->dic->getText('do_status', $model->status);
                 }
             ],
+            'sort',
             ['class' => 'yii\grid\ActionColumn', 'template' => '{update}{add-sub}{delete}', 'headerOptions' => ['width' => '60'],
                 'contentOptions' => ['class' => 'action-column'],
                 'buttons' => [

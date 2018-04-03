@@ -3,6 +3,7 @@
 namespace ciniran\dic\models;
 
 use ciniran\dic\components\DicTools;
+use ciniran\dic\service\SysDic;
 use Yii;
 use yii\db\ColumnSchemaBuilder;
 use yii\db\Migration;
@@ -16,8 +17,7 @@ use yii\db\Schema;
  * @property string $name
  * @property string $value
  * @property integer $status
-
- *
+ * @property integer $sort
  * @property SystemDic $p
  * @property SystemDic[] $systemDics
  */
@@ -38,7 +38,7 @@ class SystemDic extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pid', 'status'], 'integer'],
+            [['pid', 'status','sort'], 'integer'],
             [['name','value'],'required'],
             [['name', 'value'], 'string', 'max' => 255],
             [['pid'], 'exist', 'skipOnError' => true, 'targetClass' => SystemDic::className(), 'targetAttribute' => ['pid' => 'id']],
@@ -56,6 +56,7 @@ class SystemDic extends \yii\db\ActiveRecord
             'name' => Yii::t('dic', 'Name'),
             'value' => Yii::t('dic', 'Value'),
             'status' => Yii::t('dic', 'Status'),
+            'sort'  => Yii::t('dic', 'Sort'),
         ];
     }
 
@@ -113,6 +114,7 @@ class SystemDic extends \yii\db\ActiveRecord
             'name' => $migrations->string(255),
             'value' => $migrations->string(255),
             'status' => $migrations->integer(1)->defaultValue(1),
+            'sort' => $migrations->integer(2)->defaultValue(0),
             'FOREIGN KEY ([[pid]]) REFERENCES ' . self::tableName() . ' ([[id]])'.
             $this->buildFkClause('ON DELETE NO ACTION', 'ON UPDATE NO ACTION')
         ];
@@ -131,8 +133,6 @@ class SystemDic extends \yii\db\ActiveRecord
             ['4', null, '操作状态', 'do_status', '1'],
             ['5', '4', '启用', '1', '1'],
             ['6', '4', '禁用', '0', '1'],
-
-
         ]);
     }
 
@@ -163,7 +163,7 @@ class SystemDic extends \yii\db\ActiveRecord
 
     public function getStatusType()
     {
-        return DicTools::getKeyByName('do_status');
+        return SysDic::getKey('base_status');
     }
 
     public function afterDelete()
