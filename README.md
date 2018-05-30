@@ -22,6 +22,9 @@
 #### 4.本扩展只依赖于 YII2，无其它第三方依赖，简洁、干净
 #### 5.本扩展支持多语言配置
 #### 6.本扩展已完成字典管理界面，开箱即用，无需再次开发。
+#### 7.可按 YII 组件调用，也可以静态调用
+#### 8.组件调用为单例方式，提高效率
+#### 9.新加入了条目排序功能
 ————————————————————————————————————————————————
 
 ## 安装方法：
@@ -38,7 +41,7 @@
 ````
 
 
-2.在 `config/main.php` 添加如下配置
+2.在 `config/main.php` 添加如下配置,启用字典管理模块，请注意一定要加入别名，不然可能访问不到
 ````
     'modules' => [
         'dic' => [
@@ -49,10 +52,18 @@
         '@ciniran/dic' => '@vendor/ciniran/yii2-dic'
     ],
 ````
-3.程序会自动检测并创建一个 system_dic 的数据表。
+3.在公共配置文件中启用系统组件，按如下配置,您就可以使用 Yii::$app->dic->getKey('base_status');取值了
+````
+   'components' => [
+          'dic'=>[
+              'class'=>'\ciniran\dic\components\DicTools',
+                 ],
+          ]
+````
+4.程序会自动检测并创建一个 system_dic 的数据表。
 
 
-4.本程序支持多语言配置,
+5.本程序支持多语言配置,
     多语言配置文件位@vendor/ciniran/yii2-dic/message/ 目录之下 
   ————————————————————————————————————————————————————————
   
@@ -73,9 +84,9 @@
         'name',
         [
             'attribute' => 'status',
-            'filter'=>$searchModel->getStatusType(),
+            'filter'=>Yii::$app->dic->getKey(base_status),
             'value' => function ($model) {
-                return \ciniran\dic\components\DicTools::getTextByKey('do_status', $model->status);
+                return Yii::$app->dic->getText('do_status', $model->status);
             }
         ],
                  ]
@@ -85,35 +96,40 @@
 
 #### 1.强制删除缓存，无返回值
 ````     
-      DicTools::cleanSystemDic();
+      SysDic::cleanSystemDic();
 ````
 
 #### 2.取得所有字典的数组，
 ````
-     $array = DicTools::getAllKeys(); //通过缓存取得
+     $array = Yii::$app->dic->getAllKeys(); //通过缓存取得
      
-     $array = DicTools::getAllKeys(true); //不通过缓存取得
+     $array = Yii::$app->dic->getAllKeys(false); //不通过缓存取得
 
 ````
 #### 3.通过设定的名称取得字典数组
 ````
-      $array = DicTools::getKeyByName('base_status'); //通过缓存取得
+      $array =Yii::$app->dic->getKey('base_status'); //通过缓存取得
       
-      $array = DicTools::getKeyByName('base_status'，true);//获得已被禁用的项目
+      $array =Yii::$app->dic->getKey('base_status',true); //获得已被禁用的项目
+ 
 
 ````
 
 #### 4.通过设定的字典值取得显示值
 ````
-      $string = DicTools::getTextByKey('base_status','1');
+        $string = Yii::$app->dic->getText('base_status','1');
 
 ````
 #### 5.通过显示值取得字典值
 ````
-      $value = DicTools::getKeyByText('base_status','是');
+        $value = Yii::$app->dic->getCode('base_status','是');
 
 ````
+#### 6.正式版本加入了静态调用的方式，具体如下
+````
+       $value = SysDic::getCode('base_status', '是');
 
+````
 
 #### 如果本扩展有帮助到你，或者您觉得好用，请不要忘记为我点个star,非常感谢！
 

@@ -12,10 +12,10 @@ namespace ciniran\dic\components;
 use ciniran\dic\models\SystemDic;
 use Exception;
 use Yii;
-use yii\base\Object;
+use yii\base\BaseObject;
 
 
-class DicTools extends Object
+class DicTools extends BaseObject
 {
     /**
      * @var array $dicKeys ;
