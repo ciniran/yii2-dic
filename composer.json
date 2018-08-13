@@ -4,6 +4,8 @@
     "type": "yii2-extension",
     "keywords": ["yii2","extension","dic","dictionary","wordbook"],
     "license": "MIT",
+    "minimum-stability": "stable",
+    "version": "1.0.1",
     "authors": [
         {
             "name": "xiebo",
