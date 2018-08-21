@@ -37,22 +37,22 @@ class SysDic
             self::initKeys();
         }
         $keys = self::$dicKeys;
-        if(!isset($keys[$key])){
+        if (!isset($keys[$key])) {
             throw new Exception(Yii::t('dic', "Not find the key: '{key}' , in system dic", ['key' => $key]));
         }
         $result = $keys[$key];
         if (!$result) {
             return null;
         }
-        if(!$status){
+        if (!$status) {
             //去掉禁用的
-            $result =  array_filter($result,function($item){
-              if ($item['status'] == 1) {
-                  return true;
-              }else{
-                  return false;
-              }
-          });
+            $result = array_filter($result, function ($item) {
+                if ($item['status'] == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
 
         }
         return array_column($result, 'name', 'value');
@@ -118,11 +118,10 @@ class SysDic
         $res = [];
         foreach ($keyArrays as $key => $value) {
             if ($value['pid']) {
-                if(isset($res[$value['pid']]))
-                {
+                if (isset($res[$value['pid']])) {
                     $res[$value['pid']]['subKeys'][] = $value;
-                }else{
-                    throw new Exception(Yii::t('dic','To ensure that the parent entries are added to the database first, modify the data entry order!'));
+                } else {
+                    throw new Exception(Yii::t('dic', 'To ensure that the parent entries are added to the database first, modify the data entry order!'));
                 }
             } else {
                 $res[$value['id']] = $value;
@@ -130,21 +129,23 @@ class SysDic
         }
         $result = [];
         foreach ($res as $item) {
-           $sort = array_column($item['subKeys'], 'sort');
-            array_multisort($sort, SORT_DESC, $item['subKeys']);
-            $temp = [];
-            foreach ($item['subKeys'] as $v) {
-                $temp[$v['id']] = $v;
+            if (isset($item['subKeys'])) {
+                $sort = array_column($item['subKeys'], 'sort');
+                array_multisort($sort, SORT_DESC, $item['subKeys']);
+                $temp = [];
+                foreach ($item['subKeys'] as $v) {
+                    $temp[$v['id']] = $v;
+                }
+                $result[$item['value']] = $temp;
+            } else {
+                $result[$item['value']] = null;
             }
-            $result[$item['value']] = $temp;
         }
         Yii::$app->cache->set('DicToolsAllKey', $result);
         self::$dicKeys = $result;
         return $result;
 
     }
-
-
 
 
 }

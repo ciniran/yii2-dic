@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel ciniran\dic\models\SystemDicQuery */
@@ -10,18 +11,19 @@ use yii\widgets\Pjax;
 
 $this->title = Yii::t('dic', 'System Dics');
 $this->params['breadcrumbs'][] = $this->title;
+$url = Url::to(['/dic/default/sub']);
 $this->registerJs("
         $('.modal').on('hidden.bs.modal', function() { 
         $(this).removeData('bs.modal'); 
         });
-
+        var url = '{$url}';
     // 对象绑定点击事件
     $('#main-grid >table >tbody >tr >td:not(\".action-column\")').on('click',function (event) {
        var key = $(this).parent().attr('data-key');
            //  刷新请求,第一参数，将要刷新的dom节点,data:{}json对象传参数
            $('.modal').modal({
            'show':true,
-           'remote':'/dic/default/sub?id='+key,
+           'remote':url + '?id=' + key,
            });
         //    $.pjax.reload({container:\"#countries\",data:{'key':key}});
         });"
